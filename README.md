@@ -2,6 +2,14 @@
 
 Fine-tuning pipeline for the **Idarati** Moroccan administrative chatbot using **QLoRA** on **Qwen2.5-7B-Instruct**. This repo focuses on data generation, validation, dataset splitting, and Modal-based training/inference scripts.
 
+## Architecture (High-Level)
+
+![Idarati Finetuning Architecture](presentation/images/finetuning-architecture.png)
+
+## QLoRA Deep Dive
+
+![QLoRA Flow](presentation/images/qlora-diagram.png)
+
 ## What’s Inside
 
 - `src/finetuning/` — Data generation CLI, quality checks, and dataset splitting
