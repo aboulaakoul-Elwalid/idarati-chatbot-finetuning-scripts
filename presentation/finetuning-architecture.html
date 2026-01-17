@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idarati - Fine-tuning Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.3)); }
+            to { filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.6)); }
+        }
+
+        .header .subtitle {
+            font-size: 1.4rem;
+            color: #a0a0a0;
+            margin-bottom: 10px;
+        }
+
+        .header .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #00d4ff;
+        }
+
+        /* Main Architecture */
+        .architecture {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        /* Flow Section */
+        .flow-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .flow-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flow-section h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(180deg, #00d4ff, #7b2cbf);
+            border-radius: 2px;
+        }
+
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+        }
+
+        .pipeline-step {
+            flex: 1;
+            min-width: 200px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .pipeline-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .pipeline-step .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .pipeline-step h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .pipeline-step p {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            line-height: 1.5;
+        }
+
+        .pipeline-arrow {
+            font-size: 2rem;
+            color: #00d4ff;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(5px); }
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .detail-card {
+            background: linear-gradient(145deg, rgba(123, 44, 191, 0.2), rgba(0, 212, 255, 0.1));
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-card h4 {
+            font-size: 1.1rem;
+            color: #00d4ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-card ul {
+            list-style: none;
+        }
+
+        .detail-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            color: #c0c0c0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-card li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-card li span {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* Training Visualization */
+        .training-viz {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .training-viz h4 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .loss-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 150px;
+            gap: 8px;
+            padding: 20px 0;
+        }
+
+        .loss-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #e94560, #7b2cbf);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.5s ease-out;
+            min-width: 30px;
+        }
+
+        .loss-bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #a0a0a0;
+        }
+
+        .loss-bar.final {
+            background: linear-gradient(180deg, #00d4ff, #00ff88);
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+
+        /* QLoRA Diagram */
+        .qlora-diagram {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .model-box {
+            background: linear-gradient(145deg, rgba(233, 69, 96, 0.2), rgba(123, 44, 191, 0.2));
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .model-box.adapter {
+            background: linear-gradient(145deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2));
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .model-box h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .model-box .size {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d4ff;
+            margin: 15px 0;
+        }
+
+        .model-box p {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+
+        .plus-sign {
+            font-size: 3rem;
+            color: #00d4ff;
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 40px;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-card.before {
+            border-color: rgba(233, 69, 96, 0.3);
+        }
+
+        .comparison-card.after {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .comparison-card h4 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-card.before h4 {
+            color: #e94560;
+        }
+
+        .comparison-card.after h4 {
+            color: #00d4ff;
+        }
+
+        .comparison-card .message {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .comparison-card .label {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+            direction: ltr;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .modal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin-top: 20px;
+            color: #00d4ff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .pipeline {
+                flex-direction: column;
+            }
+
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+
+            .qlora-diagram {
+                grid-template-columns: 1fr;
+            }
+
+            .plus-sign {
+                transform: rotate(90deg);
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Idarati</h1>
+            <p class="subtitle">Fine-tuning Qwen2.5-7B for Moroccan Administrative Assistant</p>
+            <div class="tech-stack">
+                <span class="tech-badge">Qwen2.5-7B-Instruct</span>
+                <span class="tech-badge">QLoRA</span>
+                <span class="tech-badge">Modal A100</span>
+                <span class="tech-badge">4-bit Quantization</span>
+                <span class="tech-badge">PEFT</span>
+            </div>
+        </header>
+
+        <!-- Architecture -->
+        <div class="architecture">
+            <!-- Fine-tuning Pipeline -->
+            <section class="flow-section">
+                <h2>Fine-tuning Pipeline</h2>
+                
+                <div class="pipeline">
+                    <div class="pipeline-step">
+                        <div class="icon">📝</div>
+                        <h3>Training Data</h3>
+                        <p>101 conversation examples in Moroccan Darija + Arabic</p>
+                    </div>
+                    
+                    <span class="pipeline-arrow">→</span>
+                    
+                    <div class="pipeline-step">
+                        <div class="icon">🧠</div>
+                        <h3>Base Model</h3>
+                        <p>Qwen2.5-7B-Instruct loaded in 4-bit</p>
+                    </div>
+                    
+                    <span class="pipeline-arrow">→</span>
+                    
+                    <div class="pipeline-step">
+                        <div class="icon">⚡</div>
+                        <h3>QLoRA Training</h3>
+                        <p>500 steps on Modal A100 GPU</p>
+                    </div>
+                    
+                    <span class="pipeline-arrow">→</span>
+                    
+                    <div class="pipeline-step">
+                        <div class="icon">🎯</div>
+                        <h3>LoRA Adapter</h3>
+                        <p>154MB adapter with friendly tone</p>
+                    </div>
+                </div>
+
+                <!-- Details Grid -->
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <h4>📊 Training Configuration</h4>
+                        <ul>
+                            <li>Learning Rate <span>2e-4</span></li>
+                            <li>Batch Size <span>4</span></li>
+                            <li>Gradient Accumulation <span>4 steps</span></li>
+                            <li>Total Steps <span>500</span></li>
+                            <li>Warmup Steps <span>50</span></li>
+                            <li>Max Sequence Length <span>512</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>🔧 QLoRA Configuration</h4>
+                        <ul>
+                            <li>LoRA Rank (r) <span>64</span></li>
+                            <li>LoRA Alpha <span>128</span></li>
+                            <li>LoRA Dropout <span>0.05</span></li>
+                            <li>Quantization <span>4-bit NF4</span></li>
+                            <li>Compute Dtype <span>float16</span></li>
+                            <li>Double Quantization <span>Enabled</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>🎯 Target Modules</h4>
+                        <ul>
+                            <li>q_proj <span>✓</span></li>
+                            <li>k_proj <span>✓</span></li>
+                            <li>v_proj <span>✓</span></li>
+                            <li>o_proj <span>✓</span></li>
+                            <li>gate_proj <span>✓</span></li>
+                            <li>up_proj / down_proj <span>✓</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Training Loss Chart -->
+                <div class="training-viz">
+                    <h4>📉 Training Loss Progress</h4>
+                    <div class="loss-chart">
+                        <div class="loss-bar" style="height: 100%;" data-value="2.15"></div>
+                        <div class="loss-bar" style="height: 75%;" data-value="1.62"></div>
+                        <div class="loss-bar" style="height: 55%;" data-value="1.18"></div>
+                        <div class="loss-bar" style="height: 40%;" data-value="0.86"></div>
+                        <div class="loss-bar" style="height: 28%;" data-value="0.60"></div>
+                        <div class="loss-bar" style="height: 18%;" data-value="0.39"></div>
+                        <div class="loss-bar" style="height: 12%;" data-value="0.26"></div>
+                        <div class="loss-bar" style="height: 7%;" data-value="0.15"></div>
+                        <div class="loss-bar" style="height: 4%;" data-value="0.08"></div>
+                        <div class="loss-bar final" style="height: 2%;" data-value="0.025"></div>
+                    </div>
+                    <div class="chart-labels">
+                        <span>Step 0</span>
+                        <span>Step 500 (Final: 0.025)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- QLoRA Architecture -->
+            <section class="flow-section">
+                <h2>QLoRA Architecture</h2>
+                
+                <div class="qlora-diagram">
+                    <div class="model-box">
+                        <h4>🧊 Frozen Base Model</h4>
+                        <div class="size">~4GB</div>
+                        <p>Qwen2.5-7B-Instruct<br>4-bit Quantized (NF4)<br>Weights frozen during training</p>
+                    </div>
+                    
+                    <span class="plus-sign">+</span>
+                    
+                    <div class="model-box adapter">
+                        <h4>🔥 Trainable LoRA Adapter</h4>
+                        <div class="size">154MB</div>
+                        <p>Low-rank matrices (r=64)<br>Only ~0.5% of parameters trained<br>Moroccan-friendly tone learned</p>
+                    </div>
+                </div>
+
+                <div class="details-grid" style="margin-top: 30px;">
+                    <div class="detail-card">
+                        <h4>💡 Why QLoRA?</h4>
+                        <ul>
+                            <li>Memory Efficient <span>~8GB VRAM</span></li>
+                            <li>Fast Training <span>~30 min</span></li>
+                            <li>Small Adapter <span>154MB vs 14GB</span></li>
+                            <li>No Base Model Changes <span>Safe</span></li>
+                            <li>Easy Deployment <span>Merge or Swap</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>☁️ Infrastructure</h4>
+                        <ul>
+                            <li>Platform <span>Modal</span></li>
+                            <li>GPU <span>NVIDIA A100 80GB</span></li>
+                            <li>Training Time <span>~30 minutes</span></li>
+                            <li>Cost <span>~$1.50</span></li>
+                            <li>Tracking <span>Weights & Biases</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results -->
+            <section class="flow-section">
+                <h2>Fine-tuning Results</h2>
+                
+                <div class="comparison">
+                    <div class="comparison-card before">
+                        <h4>❌ Before Fine-tuning (Base Model)</h4>
+                        <div class="label">User: كيفاش نجدد البطاقة الوطنية؟</div>
+                        <div class="message">
+                            要更新您的国民身份证，您需要前往... 
+                            <br><br>
+                            <span style="color: #e94560; font-size: 0.8rem;">(Responds in Chinese, formal, generic)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-card after">
+                        <h4>✅ After Fine-tuning (With Adapter)</h4>
+                        <div class="label">User: كيفاش نجدد البطاقة الوطنية؟</div>
+                        <div class="message">
+                            أهلاً! لتجديد البطاقة الوطنية، تحتاج إلى التوجه للمصلحة المختصة مع الوثائق اللازمة. هل البطاقة الحالية منتهية الصلاحية أم هناك سبب آخر للتجديد؟
+                            <br><br>
+                            <span style="color: #00d4ff; font-size: 0.8rem;">(Friendly Arabic, asks clarifying questions)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-grid" style="margin-top: 30px;">
+                    <div class="detail-card">
+                        <h4>✨ Improvements Achieved</h4>
+                        <ul>
+                            <li>Language <span>Arabic/Darija ✓</span></li>
+                            <li>Tone <span>Friendly & Warm ✓</span></li>
+                            <li>Behavior <span>Asks Questions ✓</span></li>
+                            <li>Accuracy <span>Admits Unknown ✓</span></li>
+                            <li>Format <span>Simple & Clear ✓</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>📋 System Prompt</h4>
+                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; direction: rtl; text-align: right; font-size: 0.85rem; line-height: 1.8;">
+                            أنت مساعد إداري مغربي ودود. تساعد المواطنين في الإجراءات الإدارية بأسلوب بسيط ومباشر.
+                            أجب بعربية بسيطة وسهلة الفهم. كن مختصراً ومفيداً.
+                            إذا لم تعرف معلومة، قل ذلك بوضوح.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Idarati - Moroccan Administrative Assistant</p>
+            <div class="modal-badge">
+                <span>⚡</span>
+                <span>Deployed on Modal</span>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

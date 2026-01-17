@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture RAG (Retrieval-Augmented Generation)</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --primary-blue: #2980b9;
+            --secondary-blue: #3498db;
+            --accent-green: #27ae60;
+            --accent-purple: #8e44ad;
+            --accent-orange: #e67e22;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #1a5f7a;
+            margin-bottom: 40px;
+        }
+
+        .pipeline-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .box {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            min-width: 150px;
+            position: relative;
+        }
+
+        /* Stages */
+        .client {
+            background: #e3f2fd;
+            border: 2px solid #1976d2;
+            color: #1976d2;
+        }
+
+        .api {
+            background: #f3e5f5;
+            border: 2px solid #8e44ad;
+            color: #8e44ad;
+        }
+
+        .vector-db {
+            background: #e8f5e9;
+            border: 2px solid #27ae60;
+            color: #27ae60;
+        }
+
+        .llm {
+            background: #fff3e0;
+            border: 2px solid #e67e22;
+            color: #e67e22;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #bdc3c7;
+        }
+
+        .sub-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+            border: 2px dashed #95a5a6;
+            border-radius: 15px;
+            background: #fdfdfd;
+        }
+
+        .sub-flow-title {
+            font-weight: bold;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .step {
+            background: white;
+            border: 1px solid #bdc3c7;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Architecture RAG (Le Cerveau)</h1>
+
+    <!-- Row 1: High Level Flow -->
+    <div class="pipeline-row">
+        <div class="box client">
+            👤 Client<br>
+            <small>POST /ask</small>
+        </div>
+        
+        <div class="arrow">→</div>
+        
+        <div class="box api">
+            ⚙️ Backend API<br>
+            <small>FastAPI Server</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="box vector-db">
+            🗄️ Supabase<br>
+            <small>Hybrid Search</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="box llm">
+            🤖 LLM (Modal)<br>
+            <small>Fine-tuned Qwen</small>
+        </div>
+    </div>
+
+    <!-- Detailed Logic Flow -->
+    <div style="display: flex; gap: 30px; align-items: flex-start;">
+        
+        <div class="sub-flow">
+            <div class="sub-flow-title">1. Préparation</div>
+            <div class="step">1. Reçoit la question utilisateur</div>
+            <div class="step">2. Sélectionne le Provider (Modal/Gemini)</div>
+            <div class="step">3. Génère l'Embedding (Vecteur)</div>
+        </div>
+
+        <div class="sub-flow">
+            <div class="sub-flow-title">2. Récupération (Retrieval)</div>
+            <div class="step">1. RPC Call vers Supabase</div>
+            <div class="step">2. Recherche Hybride (Keyword + Semantic)</div>
+            <div class="step">3. Reranking & Filtrage</div>
+        </div>
+
+        <div class="sub-flow">
+            <div class="sub-flow-title">3. Génération</div>
+            <div class="step">1. Construit le Prompt (System + Context)</div>
+            <div class="step">2. Appel Inférence (Modal Endpoint)</div>
+            <div class="step">3. Parsing JSON & Validation Pydantic</div>
+        </div>
+
+    </div>
+
+</body>
+</html>

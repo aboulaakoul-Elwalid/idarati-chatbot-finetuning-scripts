@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Globale - Idarati</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --frontend-color: #3498db;
+            --backend-color: #8e44ad;
+            --db-color: #27ae60;
+            --ai-color: #e74c3c;
+            --arrow-color: #bdc3c7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #1a5f7a;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+        }
+
+        /* Main Grid */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: 1fr 150px 1fr 150px 1fr 150px 1fr;
+            align-items: center;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        /* Pillars (Boxes) */
+        .pillar {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 5px solid transparent;
+            transition: transform 0.3s;
+        }
+
+        .pillar:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Specific Pillar Styles */
+        .frontend {
+            border-color: var(--frontend-color);
+        }
+        .frontend .icon { color: var(--frontend-color); }
+
+        .backend {
+            border-color: var(--backend-color);
+        }
+        .backend .icon { color: var(--backend-color); }
+
+        .database {
+            border-color: var(--db-color);
+        }
+        .database .icon { color: var(--db-color); }
+
+        .ai {
+            border-color: var(--ai-color);
+        }
+        .ai .icon { color: var(--ai-color); }
+
+        /* Content inside Pillars */
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .tech-stack {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .tech-item {
+            display: block;
+            margin: 5px 0;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 2px;
+        }
+
+        /* Connectors */
+        .connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            position: relative;
+        }
+
+        .line {
+            width: 100%;
+            height: 3px;
+            background: var(--arrow-color);
+            position: absolute;
+            top: 50%;
+            z-index: -1;
+        }
+
+        .arrow-right {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0; 
+            height: 0; 
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid var(--arrow-color);
+        }
+
+        .action-label {
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--arrow-color);
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .action-top {
+            margin-bottom: 40px;
+        }
+
+        .action-bottom {
+            margin-top: 40px;
+        }
+
+        /* Flow Animation */
+        .flow-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-blue);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            animation: flow 3s linear infinite;
+        }
+
+        @keyframes flow {
+            0% { left: 0; opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Architecture Globale Idarati</h1>
+
+    <div class="arch-grid">
+        
+        <!-- 1. Frontend -->
+        <div class="pillar frontend">
+            <div>
+                <div class="icon">💻</div>
+                <span class="title">Frontend</span>
+            </div>
+            <div class="tech-stack">
+                <span class="tech-item">React / Vite</span>
+                <span class="tech-item">Tailwind CSS</span>
+                <span class="tech-item">TypeScript</span>
+            </div>
+        </div>
+
+        <!-- Connector 1 -->
+        <div class="connector">
+            <div class="line"></div>
+            <div class="arrow-right"></div>
+            <span class="action-label action-top">1. Question</span>
+            <span class="action-label action-bottom">5. Réponse</span>
+        </div>
+
+        <!-- 2. Backend -->
+        <div class="pillar backend">
+            <div>
+                <div class="icon">⚙️</div>
+                <span class="title">Backend API</span>
+            </div>
+            <div class="tech-stack">
+                <span class="tech-item">FastAPI (Python)</span>
+                <span class="tech-item">Pydantic</span>
+                <span class="tech-item">Orchestration</span>
+            </div>
+        </div>
+
+        <!-- Connector 2 -->
+        <div class="connector">
+            <div class="line"></div>
+            <div class="arrow-right"></div>
+            <span class="action-label action-top">2. Retrieval</span>
+            <span class="action-label action-bottom">Context</span>
+        </div>
+
+        <!-- 3. Database -->
+        <div class="pillar database">
+            <div>
+                <div class="icon">🗄️</div>
+                <span class="title">Vector DB</span>
+            </div>
+            <div class="tech-stack">
+                <span class="tech-item">Supabase (pgvector)</span>
+                <span class="tech-item">1700+ Procedures</span>
+                <span class="tech-item">Hybrid Search</span>
+            </div>
+        </div>
+
+        <!-- Connector 3 -->
+        <div class="connector">
+            <div class="line"></div>
+            <div class="arrow-right"></div>
+            <span class="action-label action-top">3. Prompt</span>
+            <span class="action-label action-bottom">4. Generation</span>
+        </div>
+
+        <!-- 4. AI Engine -->
+        <div class="pillar ai">
+            <div>
+                <div class="icon">🤖</div>
+                <span class="title">AI Engine</span>
+            </div>
+            <div class="tech-stack">
+                <span class="tech-item">Modal (A100 GPU)</span>
+                <span class="tech-item">Qwen2.5-7B</span>
+                <span class="tech-item">LoRA Fine-tuned</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Summary Caption -->
+    <div style="margin-top: 50px; background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #1a5f7a; max-width: 800px; text-align: center; color: #555; line-height: 1.6;">
+        <strong>Le Flux Complet :</strong> L'utilisateur pose une question en Darija → L'API interroge Supabase pour trouver les procédures pertinentes → Le contexte est envoyé au modèle Qwen sur Modal → L'IA génère une réponse empathique et structurée → Le résultat est affiché à l'utilisateur.
+    </div>
+
+</body>
+</html>

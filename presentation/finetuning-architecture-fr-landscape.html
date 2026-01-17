@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idarati - Architecture du Fine-tuning (Landscape)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #1a1a2e;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a5f7a 0%, #086972 100%);
+            border-radius: 15px;
+            color: #fff;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+        }
+
+        /* Landscape Grid Layout */
+        .slide-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #1a5f7a;
+            border-bottom: 3px solid #1a5f7a;
+            padding-bottom: 10px;
+        }
+
+        /* Pipeline Styles */
+        .pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .pipeline-step {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .pipeline-step h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #1a5f7a;
+        }
+
+        .arrow-down {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #bdc3c7;
+            font-weight: bold;
+        }
+
+        /* Loss Chart */
+        .loss-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 100px;
+            gap: 5px;
+            padding: 10px 0;
+            margin-top: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .loss-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #e74c3c, #c0392b);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+        }
+
+        .loss-bar.final { background: #27ae60; }
+
+        /* QLoRA Diagram */
+        .qlora-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .model-box {
+            background: #fff5f5;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #e74c3c;
+            width: 100%;
+        }
+
+        .model-box.adapter {
+            background: #f0fff4;
+            border-color: #27ae60;
+        }
+
+        .model-box .size {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a5f7a;
+        }
+
+        /* Results Comparison */
+        .comparison-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        .comparison-card.before { border-color: #e74c3c; background: #fff5f5; }
+        .comparison-card.after { border-color: #27ae60; background: #f0fff4; }
+
+        .comparison-card h4 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .comparison-card .message {
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            direction: rtl;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Architecture du Fine-tuning</h1>
+            <p class="subtitle">De la donnée brute à l'adaptateur LoRA</p>
+        </header>
+
+        <div class="slide-grid">
+            
+            <!-- Column 1: Pipeline -->
+            <div class="card">
+                <h2>1. Pipeline</h2>
+                
+                <div class="pipeline">
+                    <div class="pipeline-step">
+                        <h3>📝 Données (101 ex.)</h3>
+                        <small>Darija + Arabe</small>
+                    </div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="pipeline-step">
+                        <h3>🧠 Base Model</h3>
+                        <small>Qwen2.5-7B (4-bit)</small>
+                    </div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="pipeline-step">
+                        <h3>⚡ QLoRA Training</h3>
+                        <small>500 steps (A100)</small>
+                    </div>
+
+                    <div class="loss-chart">
+                        <div class="loss-bar" style="height: 100%;"></div>
+                        <div class="loss-bar" style="height: 70%;"></div>
+                        <div class="loss-bar" style="height: 40%;"></div>
+                        <div class="loss-bar" style="height: 20%;"></div>
+                        <div class="loss-bar final" style="height: 5%;"></div>
+                    </div>
+                    <div style="text-align: center; font-size: 0.8rem;">Loss: 2.15 → 0.025</div>
+                </div>
+            </div>
+
+            <!-- Column 2: Architecture -->
+            <div class="card">
+                <h2>2. Architecture QLoRA</h2>
+                
+                <div class="qlora-diagram">
+                    <div class="model-box">
+                        <h4>🧊 Modèle Gelé</h4>
+                        <div class="size">4 Go</div>
+                        <p>Poids figés (4-bit)</p>
+                    </div>
+                    
+                    <div style="font-size: 2rem; font-weight: bold;">+</div>
+                    
+                    <div class="model-box adapter">
+                        <h4>🔥 Adaptateur</h4>
+                        <div class="size">154 Mo</div>
+                        <p>Poids entraînés</p>
+                    </div>
+
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; width: 100%; border: 1px solid #3498db; margin-top: 20px;">
+                        <strong>Pourquoi QLoRA ?</strong>
+                        <ul style="text-align: left; padding-left: 20px; margin-top: 5px; font-size: 0.9rem;">
+                            <li>Mémoire VRAM réduite</li>
+                            <li>Entraînement rapide (30m)</li>
+                            <li>Inférence modulaire</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: Résultats -->
+            <div class="card">
+                <h2>3. Résultats</h2>
+                
+                <div class="comparison-card before">
+                    <h4>❌ Avant (Base)</h4>
+                    <div class="message">
+                        要更新您的... (Chinois/Formel)
+                    </div>
+                </div>
+                
+                <div class="comparison-card after">
+                    <h4>✅ Après (Idarati)</h4>
+                    <div class="message">
+                        أهلاً! لتجديد البطاقة... (Darija/Amical)
+                    </div>
+                </div>
+
+                <div style="background: #fdfefe; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-top: auto;">
+                    <strong>Améliorations :</strong>
+                    <ul style="padding-left: 20px; font-size: 0.9rem; margin-top: 5px;">
+                        <li>Langue : Darija/Arabe</li>
+                        <li>Ton : Empathique</li>
+                        <li>Comportement : Pose des questions</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

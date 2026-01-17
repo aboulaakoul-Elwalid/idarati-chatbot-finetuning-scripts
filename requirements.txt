@@ -1,0 +1,17 @@
+requests
+pandas
+pydantic
+beautifulsoup4
+rapidfuzz
+playwright
+# If you prefer Selenium, uncomment below
+# selenium
+selenium-wire
+blinker
+webdriver-manager
+fastapi
+uvicorn
+python-dotenv
+supabase
+google-genai
+chromadb

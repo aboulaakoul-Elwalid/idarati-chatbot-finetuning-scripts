@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idarati - Présentation Technique</title>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #2c3e50;
+            --bg: #ffffff;
+            --slide-bg: #f8f9fa;
+        }
+
+        @page {
+            size: 1280px 720px;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #e9ecef;
+            color: var(--secondary);
+            -webkit-print-color-adjust: exact;
+        }
+
+        /* Default Slide Style (Screen) */
+        .slide {
+            width: 100%;
+            height: 100vh;
+            background: white;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            page-break-after: always;
+            border-bottom: 5px solid var(--primary);
+            overflow: hidden;
+        }
+
+        .slide-header {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .slide-number {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Iframe styling for diagrams */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            overflow: hidden;
+        }
+
+        /* Title Slide Specifics */
+        .title-slide {
+            background: linear-gradient(135deg, #1a5f7a 0%, #2c3e50 100%);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        /* Image Grid for Evidence */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .grid-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .grid-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 20px;
+            left: 60px;
+            font-size: 1rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        /* Navigation (for web viewing) */
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Print Override (PDF Generation) */
+        @media print {
+            .nav-buttons { display: none; }
+            body { background: white; margin: 0; }
+            .slide { 
+                width: 1280px; 
+                height: 720px;
+                page-break-after: always;
+                border-bottom: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Title -->
+    <div class="slide title-slide" id="slide-1">
+        <h1 class="main-title">Idarati</h1>
+        <p class="subtitle">Assistant Administratif Marocain IA</p>
+        <p style="margin-top: 40px; font-size: 1.2rem; opacity: 0.8;">RAG • QLoRA • Modal • Supabase</p>
+    </div>
+
+    <!-- SECTION 1: DATA -->
+
+    <!-- Slide 2: End-to-End Pipeline -->
+    <div class="slide" id="slide-2">
+        <div class="slide-header">
+            <h2 class="slide-title">Pipeline de Données (End-to-End)</h2>
+            <span class="slide-number">02</span>
+        </div>
+        <div class="content">
+            <iframe src="charts/data-pipeline.html"></iframe>
+        </div>
+        <div class="caption">Flux global de la collecte à la vectorisation.</div>
+    </div>
+
+    <!-- Slide 3: Scraping Detail -->
+    <div class="slide" id="slide-3">
+        <div class="slide-header">
+            <h2 class="slide-title">Architecture de Scraping</h2>
+            <span class="slide-number">03</span>
+        </div>
+        <div class="content">
+            <iframe src="charts/scraping-architecture.html"></iframe>
+        </div>
+        <div class="caption">Utilisation de Playwright pour l'extraction frontend dynamique.</div>
+    </div>
+
+    <!-- SECTION 2: BACKEND -->
+
+    <!-- Slide 4: RAG Architecture -->
+    <div class="slide" id="slide-4">
+        <div class="slide-header">
+            <h2 class="slide-title">Architecture RAG (Le Cerveau)</h2>
+            <span class="slide-number">04</span>
+        </div>
+        <div class="content">
+            <iframe src="charts/rag-flow.html"></iframe>
+        </div>
+        <div class="caption">Le flux d'une question utilisateur à travers l'API et le LLM.</div>
+    </div>
+
+    <!-- SECTION 3: FINE-TUNING -->
+
+    <!-- Slide 5: Training Pipeline -->
+    <div class="slide" id="slide-5">
+        <div class="slide-header">
+            <h2 class="slide-title">Pipeline d'Entraînement</h2>
+            <span class="slide-number">05</span>
+        </div>
+        <div class="content">
+            <iframe src="charts/training-pipeline.html"></iframe>
+        </div>
+        <div class="caption">Génération de données synthétiques et boucle d'entraînement.</div>
+    </div>
+
+    <!-- Slide 6: Fine-tuning Architecture -->
+    <div class="slide" id="slide-6">
+        <div class="slide-header">
+            <h2 class="slide-title">Architecture du Fine-tuning</h2>
+            <span class="slide-number">06</span>
+        </div>
+        <div class="content">
+            <iframe src="finetuning-architecture-fr-landscape.html" style="transform: scale(0.9);"></iframe>
+        </div>
+    </div>
+
+    <!-- Slide 7: QLoRA Deep Dive -->
+    <div class="slide" id="slide-7">
+        <div class="slide-header">
+            <h2 class="slide-title">Focus Technique : QLoRA</h2>
+            <span class="slide-number">07</span>
+        </div>
+        <div class="content">
+            <iframe src="lora-advanced-diagram.html" style="transform: scale(0.85);"></iframe>
+        </div>
+        <div class="caption">Détail mathématique de l'adaptation de bas rang.</div>
+    </div>
+
+    <!-- SECTION 4: EVIDENCE -->
+
+    <!-- Slide 8: Training Evidence -->
+    <div class="slide" id="slide-8">
+        <div class="slide-header">
+            <h2 class="slide-title">Preuve d'Entraînement</h2>
+            <span class="slide-number">08</span>
+        </div>
+        <div class="content">
+            <div class="grid">
+                <div class="grid-item">
+                    <img src="../docs/screenshot-2026-01-14_16-04-13.png" alt="Training Start">
+                </div>
+                <div class="grid-item">
+                    <img src="../docs/screenshot-2026-01-14_16-29-48.png" alt="Training Curves">
+                </div>
+            </div>
+        </div>
+        <div class="caption">Logs de démarrage et courbes de perte (Weights & Biases).</div>
+    </div>
+
+    <!-- Slide 9: Inference Evidence 1 -->
+    <div class="slide" id="slide-9">
+        <div class="slide-header">
+            <h2 class="slide-title">Inférence : Tests de Ton (1/2)</h2>
+            <span class="slide-number">09</span>
+        </div>
+        <div class="content">
+            <div class="grid">
+                <div class="grid-item">
+                    <img src="../docs/screenshot-2026-01-14_18-27-03.png" alt="Test 1">
+                </div>
+                <div class="grid-item">
+                    <img src="../docs/screenshot-2026-01-14_18-27-11.png" alt="Test 2">
+                </div>
+            </div>
+        </div>
+        <div class="caption">Le modèle répond en Darija/Arabe amical (vs Chinois/Anglais avant).</div>
+    </div>
+
+    <!-- Slide 10: Inference Evidence 2 -->
+    <div class="slide" id="slide-10">
+        <div class="slide-header">
+            <h2 class="slide-title">Inférence : Tests de Ton (2/2)</h2>
+            <span class="slide-number">10</span>
+        </div>
+        <div class="content">
+            <div class="grid">
+                <div class="grid-item">
+                    <img src="../docs/screenshot-2026-01-14_18-27-17.png" alt="Test 3">
+                </div>
+                <div class="grid-item">
+                    <img src="../docs/screenshot-2026-01-14_19-38-31.png" alt="Terminal Output">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Final Result -->
+    <div class="slide" id="slide-11">
+        <div class="slide-header">
+            <h2 class="slide-title">Résultat Final : Architecture Globale</h2>
+            <span class="slide-number">11</span>
+        </div>
+        <div class="content">
+            <iframe src="charts/global-architecture.html"></iframe>
+        </div>
+        <div class="caption">L'intégration complète : Frontend, Backend, Base de Données et IA sur Modal.</div>
+    </div>
+
+    <!-- Slide 12: Conclusion -->
+    <div class="slide title-slide" id="slide-12" style="background: var(--secondary);">
+        <h1 class="main-title">Merci</h1>
+        <p class="subtitle">Questions ?</p>
+    </div>
+
+    <!-- Scripts for Navigation -->
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="prevSlide()">←</button>
+        <button class="nav-btn" onclick="nextSlide()">→</button>
+    </div>
+
+    <script>
+        function nextSlide() {
+            window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+        }
+        function prevSlide() {
+            window.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+        }
+    </script>
+
+</body>
+</html>

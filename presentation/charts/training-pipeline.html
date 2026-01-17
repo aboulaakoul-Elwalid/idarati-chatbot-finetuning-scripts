@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline d'Entraînement</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --primary-blue: #2980b9;
+            --secondary-blue: #3498db;
+            --accent-green: #27ae60;
+            --accent-red: #c0392b;
+            --grid-line: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #1a5f7a;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stage {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            width: 200px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .stage h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .stage p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin: 0;
+        }
+
+        /* Unique Colors */
+        .gen { border-color: #f39c12; }
+        .gen h3 { color: #f39c12; }
+
+        .val { border-color: #27ae60; }
+        .val h3 { color: #27ae60; }
+
+        .split { border-color: #8e44ad; }
+        .split h3 { color: #8e44ad; }
+
+        .train { border-color: #e74c3c; }
+        .train h3 { color: #e74c3c; }
+
+        .arrow {
+            font-size: 2rem;
+            color: #bdc3c7;
+        }
+
+        /* Detail Box below */
+        .details {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .detail-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .detail-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Pipeline d'Entraînement (AI Engine)</h1>
+
+    <div class="container">
+        
+        <div class="stage gen">
+            <h3>1. Génération</h3>
+            <p>Données Synthétiques</p>
+            <small>Mistral API</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="stage val">
+            <h3>2. Validation</h3>
+            <p>Quality Checks</p>
+            <small>Format JSONL</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="stage split">
+            <h3>3. Splitting</h3>
+            <p>Train / Val / Test</p>
+            <small>Par Procedure ID</small>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="stage train">
+            <h3>4. Training</h3>
+            <p>QLoRA Fine-tuning</p>
+            <small>Modal A100</small>
+        </div>
+
+    </div>
+
+    <div class="details">
+        <div class="detail-box" style="border-color: #f39c12;">
+            <span class="detail-title">Synthetic Data Generator</span>
+            Génère des conversations réalistes (User/Assistant) à partir des procédures brutes pour enseigner le "Ton" Darija.
+        </div>
+        <div class="detail-box" style="border-color: #e74c3c;">
+            <span class="detail-title">Modal Training Job</span>
+            Charge le modèle Qwen 4-bit, applique l'adaptateur LoRA, et lance la boucle d'entraînement HuggingFace Trainer.
+        </div>
+    </div>
+
+</body>
+</html>

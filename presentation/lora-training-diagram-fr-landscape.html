@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoRA - Diagramme d'Entraînement (Landscape)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden; /* Prevent scrolling for screenshot */
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #1a5f7a;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Main Grid Layout for 16:9 Slide */
+        .slide-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr 1fr; /* Three columns */
+            gap: 20px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        /* Common Card Styles */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: white;
+            padding: 2px 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        /* 1. Forward Pass Card */
+        .forward-card {
+            border: 2px dashed #1976d2;
+        }
+        .forward-card .card-title { color: #1976d2; border-color: #1976d2; }
+
+        /* 2. Loss & Backward Card */
+        .backward-card {
+            border: 2px dashed #7b1fa2;
+            justify-content: space-around;
+        }
+        .backward-card .card-title { color: #7b1fa2; border-color: #7b1fa2; }
+
+        /* 3. Update & Formula Card */
+        .update-card {
+            border: 2px dashed #2e7d32;
+            justify-content: space-between;
+        }
+        .update-card .card-title { color: #2e7d32; border-color: #2e7d32; }
+
+        /* Flow Elements */
+        .flow-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            width: 80%;
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .annotation {
+            font-size: 0.7rem;
+            font-weight: normal;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Specific Boxes */
+        .input-box { background: #e3f2fd; border: 2px solid #1976d2; color: #1976d2; }
+        .output-box { background: #fff3e0; border: 2px solid #ef6c00; color: #ef6c00; }
+        .loss-box { background: #fce4ec; border: 2px solid #c2185b; color: #c2185b; }
+        .gradient-box { background: #f3e5f5; border: 2px solid #7b1fa2; color: #7b1fa2; }
+        .update-box { background: #e8f5e9; border: 2px solid #2e7d32; color: #2e7d32; }
+        
+        .frozen-box { 
+            background: #ffebee; border: 2px solid #c62828; color: #c62828; 
+            width: 45%; font-size: 0.8rem;
+        }
+        .lora-box { 
+            background: #e8f5e9; border: 2px solid #2e7d32; color: #2e7d32;
+            width: 45%; font-size: 0.8rem;
+        }
+
+        /* Split View for Weights */
+        .weight-split {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            align-items: center;
+        }
+        .plus-sign { font-size: 1.5rem; color: #666; }
+
+        /* Matrix Visualization (Compact) */
+        .matrix-viz {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 10px 0;
+            transform: scale(0.9);
+        }
+        .matrix { display: grid; gap: 2px; padding: 4px; border: 1px solid #ccc; border-radius: 4px; }
+        .cell { width: 12px; height: 12px; background: #e8f5e9; border: 1px solid #2e7d32; }
+        .matrix-label { font-size: 0.8rem; font-weight: bold; text-align: center; }
+
+        /* Arrows */
+        .arrow-down { font-size: 1.2rem; color: #666; }
+        .arrow-right { font-size: 1.5rem; color: #666; display: none; } /* Used if layout changes */
+
+        /* Legend Footer */
+        .legend-bar {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .dot { width: 12px; height: 12px; border-radius: 3px; }
+        .dot-red { background: #ffebee; border: 2px solid #c62828; }
+        .dot-green { background: #e8f5e9; border: 2px solid #2e7d32; }
+
+        /* Formula Styling */
+        .formula-block {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        .math { font-family: 'Times New Roman', serif; font-size: 1.1rem; }
+
+        /* Responsive arrows between cards */
+        .connector-arrow {
+            position: absolute;
+            top: 50%;
+            right: -25px;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #ccc;
+            z-index: 5;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>LoRA : Low-Rank Adaptation</h1>
+        <p class="subtitle">Flux d'entraînement pour le fine-tuning efficace</p>
+    </header>
+
+    <div class="slide-container">
+        
+        <!-- COLUMN 1: Forward Pass -->
+        <div class="card forward-card">
+            <span class="card-title">1. Forward Pass</span>
+            <div class="connector-arrow">➔</div>
+
+            <div class="flow-vertical">
+                <!-- Input -->
+                <div class="box input-box">
+                    Entrée (x)
+                    <span class="annotation">Token Embeddings</span>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <!-- Weights Split -->
+                <div class="weight-split">
+                    <div class="box frozen-box">
+                        W (Gelé)
+                        <span class="annotation">14 Go</span>
+                    </div>
+                    <div class="plus-sign">+</div>
+                    <div class="box lora-box">
+                        B × A
+                        <span class="annotation">154 Mo</span>
+                    </div>
+                </div>
+
+                <!-- Matrix Viz -->
+                <div class="matrix-viz">
+                    <div>
+                        <div class="matrix" style="grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr);">
+                            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                        </div>
+                        <div class="matrix-label" style="color: #2e7d32;">A</div>
+                    </div>
+                    <div style="font-size: 1.2rem;">×</div>
+                    <div>
+                        <div class="matrix" style="grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);">
+                            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                        </div>
+                        <div class="matrix-label" style="color: #1565c0;">B</div>
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <!-- Output -->
+                <div class="box output-box">
+                    Sortie (h)
+                    <span class="annotation">h = Wx + BAx</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: Loss & Backward -->
+        <div class="card backward-card">
+            <span class="card-title">2. Loss & Backward</span>
+            <div class="connector-arrow">➔</div>
+
+            <!-- Loss -->
+            <div class="flow-vertical">
+                <div class="box output-box" style="width: 60%;">h (Prédit)</div>
+                <div style="font-size: 1.5rem;">vs</div>
+                <div class="box input-box" style="width: 60%;">y (Cible)</div>
+                
+                <div class="arrow-down">↓</div>
+
+                <div class="box loss-box">
+                    Calcul de Perte (Loss)
+                    <span class="annotation">L = CrossEntropy(h, y)</span>
+                </div>
+            </div>
+
+            <div class="arrow-down" style="color: #7b1fa2; font-weight: bold;">↓ Gradients</div>
+
+            <!-- Backward -->
+            <div class="box gradient-box">
+                Rétropropagation
+                <span class="annotation">Calculer ∂L/∂A et ∂L/∂B</span>
+            </div>
+        </div>
+
+        <!-- COLUMN 3: Update & Summary -->
+        <div class="card update-card">
+            <span class="card-title">3. Mise à Jour (Update)</span>
+
+            <div class="flow-vertical">
+                <div class="box frozen-box" style="width: 100%; opacity: 0.6;">
+                    W (Poids originaux)
+                    <span class="annotation">❌ Aucun changement (Gelé)</span>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="box update-box" style="width: 100%;">
+                    Mise à jour A & B
+                    <span class="annotation">✅ Optimiseur (AdamW)</span>
+                </div>
+
+                <div class="formula-block">
+                    <div class="math" style="color: #2e7d32;">A ← A - η · ∂L/∂A</div>
+                    <div class="math" style="color: #1565c0; margin-top: 8px;">B ← B - η · ∂L/∂B</div>
+                </div>
+            </div>
+
+            <!-- Summary Formula -->
+            <div style="margin-top: 20px; text-align: center; border-top: 1px solid #eee; padding-top: 10px; width: 100%;">
+                <div style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">Formule Finale</div>
+                <div class="math" style="font-size: 1.2rem;">
+                    h = <span style="color:#c62828;">W</span>x + <span style="color:#2e7d32;">B·A</span>x
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="legend-bar">
+        <div class="legend-item">
+            <div class="dot dot-red"></div>
+            <span>Poids Gelés (14 Go)</span>
+        </div>
+        <div class="legend-item">
+            <div class="dot dot-green"></div>
+            <span>Poids Entraînables (154 Mo)</span>
+        </div>
+        <div class="legend-item">
+            <span>η = Taux d'apprentissage</span>
+        </div>
+    </div>
+
+</body>
+</html>

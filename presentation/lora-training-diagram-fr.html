@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoRA - Diagramme d'Entraînement</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #1a5f7a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 50px;
+        }
+
+        /* Main Diagram */
+        .diagram {
+            position: relative;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        /* Flow Steps */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Boxes */
+        .box {
+            padding: 20px 30px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            min-width: 150px;
+            position: relative;
+        }
+
+        .input-box {
+            background: #e3f2fd;
+            border: 3px solid #1976d2;
+            color: #1976d2;
+        }
+
+        .frozen-box {
+            background: #ffebee;
+            border: 3px solid #c62828;
+            color: #c62828;
+            position: relative;
+        }
+
+        .frozen-box::after {
+            content: '🔒';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 1.2rem;
+        }
+
+        .lora-box {
+            background: #e8f5e9;
+            border: 3px solid #2e7d32;
+            color: #2e7d32;
+        }
+
+        .output-box {
+            background: #fff3e0;
+            border: 3px solid #ef6c00;
+            color: #ef6c00;
+        }
+
+        .loss-box {
+            background: #fce4ec;
+            border: 3px solid #c2185b;
+            color: #c2185b;
+        }
+
+        .gradient-box {
+            background: #f3e5f5;
+            border: 3px solid #7b1fa2;
+            color: #7b1fa2;
+        }
+
+        .update-box {
+            background: #e8f5e9;
+            border: 3px solid #2e7d32;
+            color: #2e7d32;
+        }
+
+        /* Arrows */
+        .arrow {
+            font-size: 2rem;
+            color: #666;
+        }
+
+        .arrow-down {
+            font-size: 2.5rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .arrow-curved {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        /* Step Labels */
+        .step-label {
+            position: absolute;
+            left: -80px;
+            background: #1a5f7a;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            position: relative;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 15px;
+        }
+
+        .forward-section {
+            background: rgba(25, 118, 210, 0.05);
+            border: 2px dashed #1976d2;
+        }
+
+        .backward-section {
+            background: rgba(123, 31, 162, 0.05);
+            border: 2px dashed #7b1fa2;
+        }
+
+        .section-title {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background: white;
+            padding: 5px 15px;
+            font-weight: 700;
+            border-radius: 5px;
+        }
+
+        .forward-section .section-title {
+            color: #1976d2;
+        }
+
+        .backward-section .section-title {
+            color: #7b1fa2;
+        }
+
+        /* Matrix Visualization */
+        .matrix-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .matrix {
+            display: grid;
+            gap: 3px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .matrix-a {
+            grid-template-columns: repeat(2, 25px);
+            grid-template-rows: repeat(4, 25px);
+        }
+
+        .matrix-b {
+            grid-template-columns: repeat(4, 25px);
+            grid-template-rows: repeat(2, 25px);
+        }
+
+        .matrix-cell {
+            width: 25px;
+            height: 25px;
+            background: #e8f5e9;
+            border: 1px solid #2e7d32;
+            border-radius: 3px;
+        }
+
+        .matrix-label {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .matrix-label-a {
+            color: #2e7d32;
+        }
+
+        .matrix-label-b {
+            color: #1565c0;
+        }
+
+        .matrix-dims {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* LoRA Detail Box */
+        .lora-detail {
+            background: white;
+            border: 3px solid #2e7d32;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 600px;
+        }
+
+        .lora-detail h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .formula {
+            text-align: center;
+            font-size: 1.4rem;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .formula .frozen {
+            color: #c62828;
+        }
+
+        .formula .trainable {
+            color: #2e7d32;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid;
+        }
+
+        .legend-frozen {
+            background: #ffebee;
+            border-color: #c62828;
+        }
+
+        .legend-trainable {
+            background: #e8f5e9;
+            border-color: #2e7d32;
+        }
+
+        /* Annotations */
+        .annotation {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* Big Plus */
+        .big-plus {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #666;
+        }
+
+        /* Equals */
+        .equals {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LoRA : Low-Rank Adaptation</h1>
+        <p class="subtitle">Flux d'entraînement pour le fine-tuning efficace</p>
+
+        <div class="diagram">
+            
+            <!-- Forward Pass Section -->
+            <div class="section forward-section">
+                <span class="section-title">1️⃣ Forward Pass (Propagation Avant)</span>
+                
+                <div class="flow-container">
+                    <!-- Input -->
+                    <div class="flow-row">
+                        <div class="box input-box">
+                            <div>📥 Entrée (x)</div>
+                            <div class="annotation">Token embeddings</div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <!-- Parallel Paths -->
+                    <div class="flow-row">
+                        <div class="box frozen-box">
+                            <div>W (Poids Gelés)</div>
+                            <div class="annotation">7B paramètres</div>
+                        </div>
+                        
+                        <div class="big-plus">+</div>
+                        
+                        <div class="box lora-box">
+                            <div>ΔW = B × A</div>
+                            <div class="annotation">~0.5% paramètres</div>
+                        </div>
+                    </div>
+
+                    <!-- Matrix Detail -->
+                    <div class="matrix-container">
+                        <div>
+                            <div class="matrix matrix-a">
+                                <div class="matrix-cell"></div><div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div><div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div><div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div><div class="matrix-cell"></div>
+                            </div>
+                            <div class="matrix-label matrix-label-a">A</div>
+                            <div class="matrix-dims">d × r</div>
+                        </div>
+                        
+                        <span style="font-size: 1.5rem; color: #666;">×</span>
+                        
+                        <div>
+                            <div class="matrix matrix-b">
+                                <div class="matrix-cell"></div><div class="matrix-cell"></div><div class="matrix-cell"></div><div class="matrix-cell"></div>
+                                <div class="matrix-cell"></div><div class="matrix-cell"></div><div class="matrix-cell"></div><div class="matrix-cell"></div>
+                            </div>
+                            <div class="matrix-label matrix-label-b">B</div>
+                            <div class="matrix-dims">r × k</div>
+                        </div>
+                        
+                        <span style="font-size: 1.5rem; color: #666;">=</span>
+                        
+                        <div>
+                            <div style="padding: 15px 25px; background: #e8f5e9; border: 2px solid #2e7d32; border-radius: 8px;">
+                                <strong>ΔW</strong>
+                            </div>
+                            <div class="matrix-dims">d × k</div>
+                        </div>
+                    </div>
+
+                    <div class="annotation">r = rang (ex: 64) << d, k (ex: 4096)</div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <!-- Output -->
+                    <div class="flow-row">
+                        <div class="box output-box">
+                            <div>📤 Sortie (ŷ)</div>
+                            <div class="annotation">h = Wx + BAx</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down" style="font-size: 3rem;">⬇️</div>
+
+            <!-- Loss Calculation -->
+            <div class="flow-row">
+                <div class="box output-box" style="min-width: 100px;">
+                    <div>ŷ</div>
+                    <div class="annotation">Prédit</div>
+                </div>
+                
+                <div class="arrow">➡️</div>
+                
+                <div class="box loss-box">
+                    <div>📊 Calcul de la Perte</div>
+                    <div class="annotation">L = CrossEntropy(ŷ, y)</div>
+                </div>
+                
+                <div class="arrow">⬅️</div>
+                
+                <div class="box input-box" style="min-width: 100px;">
+                    <div>y</div>
+                    <div class="annotation">Cible</div>
+                </div>
+            </div>
+
+            <div class="arrow-down" style="font-size: 3rem;">⬇️</div>
+
+            <!-- Backward Pass Section -->
+            <div class="section backward-section">
+                <span class="section-title">2️⃣ Backward Pass (Rétropropagation)</span>
+                
+                <div class="flow-container">
+                    <div class="flow-row">
+                        <div class="box gradient-box">
+                            <div>∂L/∂A, ∂L/∂B</div>
+                            <div class="annotation">Calcul des gradients</div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="flow-row">
+                        <div class="box frozen-box" style="opacity: 0.5;">
+                            <div>W (Gelé)</div>
+                            <div class="annotation">❌ Pas de mise à jour</div>
+                        </div>
+                        
+                        <div style="font-size: 2rem; color: #666;">|</div>
+                        
+                        <div class="box update-box">
+                            <div>✅ Mise à Jour A, B</div>
+                            <div class="annotation">Descente de gradient</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down" style="font-size: 3rem;">⬇️</div>
+
+            <!-- Gradient Descent -->
+            <div class="section" style="background: rgba(46, 125, 50, 0.05); border: 2px dashed #2e7d32;">
+                <span class="section-title" style="color: #2e7d32;">3️⃣ Descente de Gradient</span>
+                
+                <div class="flow-container">
+                    <div class="formula">
+                        <strong style="color: #2e7d32;">A</strong> ← <strong style="color: #2e7d32;">A</strong> - η · ∂L/∂A
+                        <br><br>
+                        <strong style="color: #1565c0;">B</strong> ← <strong style="color: #1565c0;">B</strong> - η · ∂L/∂B
+                    </div>
+                    <div class="annotation">η = taux d'apprentissage (learning rate)</div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-frozen"></div>
+                    <span>Poids Gelés (non entraînés)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-trainable"></div>
+                    <span>Poids Entraînables (A et B)</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Summary Formula Box -->
+        <div class="lora-detail">
+            <h3>🔑 Formule Clé de LoRA</h3>
+            <div class="formula">
+                h = <span class="frozen">W</span>x + <span class="trainable">B·A</span>x
+            </div>
+            <div style="text-align: center; color: #666;">
+                <p><strong style="color: #c62828;">W</strong> = Matrice originale (gelée, ~14 Go)</p>
+                <p><strong style="color: #2e7d32;">A, B</strong> = Matrices de rang faible (entraînables, ~154 Mo)</p>
+                <p style="margin-top: 15px;"><strong>Avantage :</strong> Entraîner seulement 0.5% des paramètres !</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

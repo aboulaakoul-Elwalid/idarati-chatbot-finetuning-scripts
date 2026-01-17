@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture de Scraping</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --primary-blue: #2980b9;
+            --secondary-blue: #3498db;
+            --accent-green: #27ae60;
+            --accent-red: #c0392b;
+            --grid-line: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #1a5f7a;
+            margin-bottom: 40px;
+        }
+
+        .flow-container {
+            display: flex;
+            gap: 50px;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+            min-width: 300px;
+        }
+
+        .column-title {
+            font-weight: bold;
+            color: #1a5f7a;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .node {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #3498db;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .node.start {
+            background: #e3f2fd;
+            border-color: #1976d2;
+        }
+
+        .node.process {
+            border-color: #3498db;
+        }
+
+        .node.storage {
+            background: #fff3e0;
+            border-color: #f39c12;
+            border-radius: 0 0 15px 15px;
+            border-top: 4px solid #f39c12;
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            color: #bdc3c7;
+        }
+
+        /* Connecting Playwright Logic */
+        .playwright-box {
+            border: 2px dashed #27ae60;
+            padding: 20px;
+            border-radius: 10px;
+            background: #e8f5e9;
+            width: 100%;
+            text-align: center;
+        }
+
+        .playwright-label {
+            color: #27ae60;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Pipeline de Collecte de Données (Scraping)</h1>
+
+    <div class="flow-container">
+        
+        <!-- Frontend Path -->
+        <div class="column">
+            <div class="column-title">1. Navigation Frontend</div>
+            
+            <div class="node start">CLI: src/main.py</div>
+            <div class="arrow">↓</div>
+            
+            <div class="playwright-box">
+                <span class="playwright-label">🎭 Playwright Engine</span>
+                <div class="node process">Load Theme Page</div>
+                <div class="arrow">↓</div>
+                <div class="node process">Scroll & Extract Links</div>
+            </div>
+
+            <div class="arrow">↓</div>
+            <div class="node process">Snapshot Pages (HTML)</div>
+            <div class="arrow">↓</div>
+            <div class="node storage">data/raw/pages.json</div>
+        </div>
+
+        <!-- Parsing Path -->
+        <div class="column">
+            <div class="column-title">2. Parsing & Structuration</div>
+            
+            <div class="node process">Load Raw HTML</div>
+            <div class="arrow">↓</div>
+            <div class="node process">Parse Procedure Page</div>
+            <div class="arrow">↓</div>
+            <div class="node process">Extract Title, Content, Steps</div>
+            <div class="arrow">↓</div>
+            <div class="node storage">data/processed/procedures.json</div>
+        </div>
+
+        <!-- Markdown Path -->
+        <div class="column">
+            <div class="column-title">3. Transformation RAG</div>
+            
+            <div class="node process">Load JSON Data</div>
+            <div class="arrow">↓</div>
+            <div class="node process">Convert to Markdown</div>
+            <div class="arrow">↓</div>
+            <div class="node process">Split into Chunks</div>
+            <div class="arrow">↓</div>
+            <div class="node storage">ready_for_embedding.json</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
